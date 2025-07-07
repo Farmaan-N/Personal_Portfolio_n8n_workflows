@@ -1,0 +1,172 @@
+{
+  "name": "Personal_Portfolio_Forms",
+  "nodes": [
+    {
+      "parameters": {
+        "formTitle": "Feedback Form",
+        "formDescription": "I'd love to hear your feedback on my portfolio so that i can improve.",
+        "formFields": {
+          "values": [
+            {
+              "fieldLabel": "Name",
+              "placeholder": "John",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Email",
+              "fieldType": "email",
+              "placeholder": "example@gmail.com",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Please rate the portfolio",
+              "fieldType": "dropdown",
+              "fieldOptions": {
+                "values": [
+                  {
+                    "option": "Poor"
+                  },
+                  {
+                    "option": "Good"
+                  },
+                  {
+                    "option": "Excellent"
+                  }
+                ]
+              },
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Description",
+              "placeholder": "=Give your feedback...                                                                                                          ",
+              "requiredField": true
+            }
+          ]
+        },
+        "options": {
+          "appendAttribution": false,
+          "buttonLabel": "Submit the Form"
+        }
+      },
+      "type": "n8n-nodes-base.formTrigger",
+      "typeVersion": 2.2,
+      "position": [
+        200,
+        80
+      ],
+      "id": "5a324c85-cde5-41ab-b945-e2828bf776d5",
+      "name": "On form submission",
+      "webhookId": "f0935f51-a8fd-40f4-a433-ffcfbd6b4975"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Hello, {{ $json.Name }}",
+        "options": {
+          "systemMessage": "Your system message..."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2,
+      "position": [
+        420,
+        80
+      ],
+      "id": "ebbbd28c-3380-452a-870b-af579dfce730",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "model": "deepseek/deepseek-chat:free",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenRouter",
+      "typeVersion": 1,
+      "position": [
+        460,
+        300
+      ],
+      "id": "d18f79b0-a327-46c8-bdcd-522cd0bcaefc",
+      "name": "OpenRouter Chat Model",
+      "credentials": {
+        "openRouterApi": {
+          "id": "Your ID",
+          "name": "OpenRouter"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $('On form submission').item.json.Email }}",
+        "subject": "Thanks for Your Feedback on My Portfolio!",
+        "emailType": "text",
+        "message": "={{ $json.output }}",
+        "options": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        780,
+        80
+      ],
+      "id": "1c972c37-4194-4495-a338-839efb6edc79",
+      "name": "Send a message",
+      "webhookId": "Dummy id",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "YOUR ID",
+          "name": "Gmail account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "On form submission": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenRouter Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Send a message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "1ec591f9-f1f7-40c8-a9dc-710b45d43a96",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "0a96d803d4a460ea7f7376e898bcc599e24cfcf4fd1ec92f496b3ad62941cf8_Dummy"
+  },
+  "id": "ZYbyHZwjBGThsIsH",
+  "tags": []
+}
